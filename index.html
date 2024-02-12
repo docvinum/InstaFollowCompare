@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Instagram Follow Comparator</title>
+    <style type="text/css">
+        body{
+            max-width: 600px;
+            margin: auto;
+        }
+        textarea{
+            width:100%;
+            min-height: 200px;
+        }
+        h1, h2, h3 {
+        }
+    </style>
+</head>
+<body>
+    <h1>Instagram Follow Comparator</h1>
+<!-- HTML pour la saisie des données -->
+<h2>Inputs</h2>
+<h3>Following</h3>
+<textarea id="followings" placeholder="Paste here the following list."></textarea>
+<h3>Followers</h3>
+<textarea id="followers" placeholder="Paste here the follower list."></textarea>
+<button onclick="compare()">Compare</button>
+
+<!-- Emplacements pour afficher les résultats -->
+<div id="results">
+    <h2>Results</h2>
+    <div><strong>💞 Mutuals:</strong> 
+        <ul id="mutual"></ul>
+    </div>
+    <div><strong>💔 Following who doesn't follow you:</strong>
+        <ul id="onlyFollowings"></ul>
+    </div>
+    <div><strong>💝 Followers you don't follow back:</strong>
+        <ul id="onlyFollowers"></ul>
+    </div>
+</div>
+
+<script>
+function extractUsernames(inputText) {
+    const lines = inputText.split('\n');
+    const usernames = [];
+    lines.forEach(line => {
+        const profileIndicator = "'s profile picture";
+        if (line.includes(profileIndicator)) {
+            const username = line.split(profileIndicator)[0];
+            usernames.push(username);
+        }
+    });
+    return usernames;
+}
+
+function generateLinksHtml(usernames) {
+    return usernames.map(username => 
+        `<li><a href="https://www.instagram.com/${username}" target="_blank">${username}</a></li>`
+    ).join('');
+}
+
+function compare() {
+    const followersText = document.getElementById('followers').value;
+    const followingsText = document.getElementById('followings').value;
+    
+    const followers = extractUsernames(followersText);
+    const followings = extractUsernames(followingsText);
+
+    const mutual = followers.filter(value => followings.includes(value));
+    const onlyFollowings = followings.filter(value => !followers.includes(value));
+    const onlyFollowers = followers.filter(value => !followings.includes(value));
+
+    document.getElementById('mutual').innerHTML = generateLinksHtml(mutual);
+    document.getElementById('onlyFollowings').innerHTML = generateLinksHtml(onlyFollowings);
+    document.getElementById('onlyFollowers').innerHTML = generateLinksHtml(onlyFollowers);
+}
+</script>
+
+</body>
+</html>
